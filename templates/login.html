@@ -1,0 +1,35 @@
+{% extends "meta.html" %}
+
+
+{% block body %}
+
+<div class="container my-4">
+
+    <h2 class="text-center my-4"> Log in </h2>
+    <div class="container my-4">
+        <form id="form" action="/login" method="POST">
+            {% csrf_token %}
+            <div class="mb-3">
+                <label for="username" class="form-label">Username</label>
+                <input type="username" class="form-control" id="username" name="username" placeholder="username" required>
+            </div>
+            <div class="mb-3">
+                <label for="password" class="form-label">Password</label>
+                <input type="password" class="form-control" id="password" name="password" placeholder="password" required>
+            </div>
+
+            <div class="d-flex justify-content-end">
+                <button type="submit" class="btn btn-primary my-4" id="submitBtn">Log in</button>
+            </div>
+        </form>
+    </div>
+
+    <div class="container my-4">
+        Not a member?  
+        <a class="icon-link icon-link-hover" href="signup">
+            Sign up
+        </a>
+    </div>
+</div>
+
+{% endblock body %}
