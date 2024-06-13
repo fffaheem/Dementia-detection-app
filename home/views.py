@@ -55,6 +55,14 @@ def contactus(request):
         email = request.POST.get("email")
         text = request.POST.get("text")
         time = datetime.today()
+        try:
+            contact = Contact(email=email, text=text, date=time)
+            contact.save()            
+            messages.success(request, "query send successfully.",extra_tags="success contact")
+        except:
+            messages.error(request, "Oops something went wrong.",extra_tags="danger contact")
+
+
         print(email,text,time)
 
 
