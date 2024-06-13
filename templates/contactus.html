@@ -1,0 +1,36 @@
+{% extends "meta.html" %}
+
+
+{% block body %}
+
+{% if messages %}
+    {% for message in messages %}
+        {% if message.extra_tags == "contact" %}
+            <div class="alert alert-{{ message.level_tag }} alert-dismissible fade show" role="alert">
+                <strong> {{ message }} </strong>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        {% endif %}
+    {% endfor %}
+{% endif %}
+
+<h2 class="text-center my-4">Contact us</h2>
+
+<div class="container my-4">
+    <form id="form" action="/contactus" method="POST">
+        {% csrf_token %}
+        <div class="mb-3">
+            <label for="email" class="form-label">Email address</label>
+            <input type="email" class="form-control" id="email" name="email" placeholder="name@example.com" required>
+        </div>
+        <div class="mb-3">
+            <label for="text" class="form-label">Query</label>
+            <textarea class="form-control" id="text" name="text" rows="3" required></textarea>
+        </div>
+        <button type="submit" class="btn btn-primary my-4" id="submitBtn">Submit</button>
+    </form>
+</div>
+
+
+
+{% endblock body %}
