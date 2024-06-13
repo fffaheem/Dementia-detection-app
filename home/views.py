@@ -4,11 +4,31 @@ from django.contrib.auth.models import User
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from datetime import datetime
-from home.models import Contact
+from home.models import Contact, Diagnose
+from django.utils import timezone
 
 
 @login_required(login_url="login")
 def index(request):
+
+    instance = request.user
+    if request.method == "POST":
+        email = instance.email
+        username = instance.username
+        text = "demented hai"
+        cdr = 0.0
+        image = request.FILES.get('image')
+        time = timezone.now()
+        try:
+            diagnose = Diagnose(username = instance, email=email, text=text, image=image,cdr = cdr ,datetime=time)
+            diagnose.save()
+            # print("success")
+            messages.success(request, "Success",extra_tags="success index")
+        except:
+            # print("Something went wrong")
+            messages.error(request, "Something went wrong",extra_tags="danger index")
+        print(email,username,text,cdr,image)
+
     context = {
         "home_active" : "active"
     }

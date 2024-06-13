@@ -3,13 +3,24 @@
 
 {% block body %}
 
+{% if messages %}
+    {% for message in messages %}
+        {% if "index" in message.extra_tags %}
+            <div class="alert alert-{{ message.extra_tags.split.0 }}  alert-dismissible fade show" role="alert">
+                <strong> {{ message }} </strong>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        {% endif %}
+    {% endfor %}
+{% endif %}
+
 <div class="container my-4">
 
     <h1 class="text-center">Upload Image</h1>
 </div>
 
 <div class="container my-4">
-    <form id="form" action="/" method="POST">
+    <form id="form" action="/" method="POST" enctype="multipart/form-data">
         {% csrf_token %}
         <div class="input-group mb-3 my-4">
             <label class="input-group-text" for="image">Upload</label>
