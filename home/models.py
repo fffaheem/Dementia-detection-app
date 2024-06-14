@@ -17,6 +17,7 @@ class Diagnose(models.Model):
     image = models.ImageField(upload_to='images/')
     text = models.TextField()
     cdr = models.FloatField()
+    cdr_text = models.CharField(max_length=255)
     datetime = models.DateTimeField()
 
     def __str__(self):

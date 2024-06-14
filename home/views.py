@@ -6,6 +6,7 @@ from django.contrib.auth.decorators import login_required
 from datetime import datetime
 from home.models import Contact, Diagnose
 from django.utils import timezone
+from django.shortcuts import get_object_or_404
 
 
 @login_required(login_url="login")
@@ -38,6 +39,18 @@ def index(request):
 def user(request):
     instance = request.user
 
+    if request.method == "GET" and request.GET.get("delete"):
+        get_id = request.GET.get("id")
+        d = get_object_or_404(Diagnose,id=get_id)
+        print(d.username)
+        if d.username == instance:
+            d.delete()
+            messages.success(request, "deleted successfully",extra_tags="success user")
+        else:
+            messages.error(request, "not yours to delete",extra_tags="danger user")
+
+        
+
     if request.method == "POST":
         post_email = request.POST.get("email")
         post_username = request.POST.get("username")
@@ -59,13 +72,14 @@ def user(request):
     username = instance.username
     firstname = instance.first_name
     lastname = instance.last_name
-
+    scans = Diagnose.objects.filter(username=instance)
     context = {
         "user_active" : "active",
         "username" : username,
         "email" : email,
         "firstname" : firstname,
-        "lastname" : lastname
+        "lastname" : lastname,
+        "scans" : scans,
     }
     return render(request,"user.html",context)
 

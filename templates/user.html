@@ -46,6 +46,29 @@
 
     <hr>
 
+    <h2 class="text-center my-4"> My Scans </h2>
+
+    <div class="container">
+
+        {% if scans|length < 1 %}
+            <h2> No scans yet </h2>
+        {% endif %}
+
+        {% for scan in scans%}
+        <div class="card my-4 d-flex flex-row">
+            <img src="{{scan.image.url}}" class="card-img-top" alt="..." style="width: 10rem;">
+            <div class="card-body">
+                <small>{{scan.username}} || {{scan.email}}</small>
+                <h5 class="card-title"> ({{scan.cdr}}) {{scan.cdr_text}}</h5>
+                <small>{{scan.datetime}}</small>
+                <p class="card-text">{{scan.text}}</p>
+                <a href="/user?delete=true&id={{scan.id}}" class="btn btn-danger">Delete</a>
+                <a href="#" class="btn btn-primary">Open</a>
+            </div>
+        </div>
+        {% endfor %}
+
+    </div>
 
 
 </div>
