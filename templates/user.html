@@ -63,7 +63,7 @@
                 <small>{{scan.datetime}}</small>
                 <p class="card-text">{{scan.text}}</p>
                 <a href="/user?delete=true&id={{scan.id}}" class="btn btn-danger">Delete</a>
-                <a href="#" class="btn btn-primary">Open</a>
+                <a href="/details?show=true&id={{scan.id}}" class="btn btn-primary">Open</a>
             </div>
         </div>
         {% endfor %}

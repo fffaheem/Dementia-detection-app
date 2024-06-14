@@ -18,13 +18,16 @@ def index(request):
         username = instance.username
         text = "demented hai"
         cdr = 0.0
+        cdr_text = "cognitive normal"
         image = request.FILES.get('image')
         time = timezone.now()
         try:
-            diagnose = Diagnose(username = instance, email=email, text=text, image=image,cdr = cdr ,datetime=time)
+            diagnose = Diagnose(username = instance, email=email, text=text, image=image,cdr = cdr, cdr_text = cdr_text ,datetime=time)
             diagnose.save()
+            # print("id is "+str(diagnose.id))
             # print("success")
             messages.success(request, "Success",extra_tags="success index")
+            return redirect(f"/details?show=true&id={diagnose.id}")
         except:
             # print("Something went wrong")
             messages.error(request, "Something went wrong",extra_tags="danger index")
@@ -82,6 +85,22 @@ def user(request):
         "scans" : scans,
     }
     return render(request,"user.html",context)
+
+@login_required(login_url="login")
+def details(request):
+    instance = request.user
+    if request.method == "GET" and request.GET.get("show"):
+        get_id = request.GET.get("id")
+        d = get_object_or_404(Diagnose,id=get_id)
+        if d.username == instance:
+            context = {
+                "scan":d
+            }
+            return render(request,"details.html",context)
+        else: 
+            return redirect("/")
+    else:
+        return redirect("/")
 
 def contactus(request):
 

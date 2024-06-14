@@ -1,0 +1,23 @@
+{% extends "meta.html" %}
+
+
+{% block body %}
+
+<h2 class="text-center my-4">Diagnoses</h2>
+
+<div class="container my-4">
+    <div class="card my-4">
+        <img src="{{scan.image.url}}" class="card-img-top" alt="...">
+        <div class="card-body">
+            <small>{{scan.username}} || {{scan.email}}</small>
+            <h5 class="card-title"> ({{scan.cdr}}) {{scan.cdr_text}}</h5>
+            <small>{{scan.datetime}}</small>
+            <p class="card-text">{{scan.text}}</p>
+            <a href="/user?delete=true&id={{scan.id}}" class="btn btn-danger">Delete</a>
+        </div>
+    </div>
+</div>
+
+
+
+{% endblock body %}
