@@ -8,6 +8,48 @@ from home.models import Contact, Diagnose
 from django.utils import timezone
 from django.shortcuts import get_object_or_404
 
+from pathlib import Path
+# Build paths inside the project like this: BASE_DIR / 'subdir'.
+BASE_DIR = Path(__file__).resolve().parent.parent
+
+import os
+import numpy as np
+import cv2
+import tensorflow as tf
+from tensorflow.keras.models import load_model
+
+def is_image_valid_mri(validator_model,path,threshold):
+    img = cv2.imread(path)
+    resize = tf.image.resize(img, (32,32))
+    model_prediction = validator_model.predict(np.expand_dims(resize/255,0))
+    if model_prediction[0][0] > threshold:
+        return "invalid"
+    else:
+        return "valid"
+    
+def check_for_dementia(model,path):
+    img = cv2.imread(path)
+    resize = tf.image.resize(img, (256,256))
+    model_prediction = model.predict(np.expand_dims(resize/255,0))
+    predicted_class = model_prediction.argmax(axis=1)[0]
+   
+    if predicted_class == 0:
+        # return "0.0: Cognitively normal"
+        return 0.0
+    elif predicted_class == 1:
+        # return "0.5: Questionable"
+        return 0.5
+    elif predicted_class == 2:
+        return 1.0
+    else:
+        return 2.0
+
+alzheimer_model = load_model(BASE_DIR / "AI model/CNN_images_only.h5")
+validator_model = load_model(BASE_DIR / "AI model/images_validator3.h5")
+# validator_model = load_model(os.path.join("images_validator3.h5"))
+
+
+
 
 @login_required(login_url="login")
 def index(request):
@@ -15,21 +57,55 @@ def index(request):
     instance = request.user
     if request.method == "POST":
         email = instance.email
-        username = instance.username
-        text = "demented hai"
+        # username = instance.username
+        text = "Your cognitive health is in excellent condition. No signs of dementia were detected. Continue maintaining a healthy lifestyle and regular check-ups to keep your brain healthy."
         cdr = 0.0
-        cdr_text = "cognitive normal"
+        cdr_text = "Cognitive normal"
         image = request.FILES.get('image')
         time = timezone.now()
         try:
             diagnose = Diagnose(username = instance, email=email, text=text, image=image,cdr = cdr, cdr_text = cdr_text ,datetime=time)
             diagnose.save()
-            # print("id is "+str(diagnose.id))
-            # print("success")
-            messages.success(request, "Success",extra_tags="success index")
-            return redirect(f"/details?show=true&id={diagnose.id}")
+
+            full_path = os.path.join(BASE_DIR,diagnose.image.url[1:])
+            print(full_path)
+            is_valid = is_image_valid_mri(validator_model,full_path,0.1)
+            if is_valid == "valid":
+                cdr = check_for_dementia(alzheimer_model,full_path)
+                print(cdr)
+                cdr_text = ""
+                cdr_long_text = ""
+                if cdr == 0.0:
+                    cdr_text = "Cognitive Normal"
+                    cdr_long_text = "Your cognitive health is in excellent condition. No signs of dementia were detected. Continue maintaining a healthy lifestyle and regular check-ups to keep your brain healthy."
+                elif cdr == 0.5:
+                    cdr_text = "Questionable"
+                    cdr_long_text = "There are some mild signs that may suggest early cognitive changes. It is important to monitor your health closely and consider consulting with a specialist to further evaluate your cognitive status and take preventive measures."
+                elif cdr == 1.0:
+                    cdr_text = "Mild"
+                    cdr_long_text = "Mild cognitive impairment has been detected. This may impact your daily activities slightly. We recommend scheduling an appointment with a healthcare professional to discuss potential treatments and support options to help manage your condition."
+                elif cdr == 2.0:
+                    cdr_text = "Moderate or Severe"
+                    cdr_long_text = "Moderate to severe cognitive impairment has been identified. This is likely to significantly impact your daily life. It is crucial to seek immediate medical advice to explore available treatments and support services. We are here to assist you and your loved ones through this journey."
+
+                diagnose.cdr = cdr
+                diagnose.cdr_text = cdr_text
+                diagnose.text = cdr_long_text
+                diagnose.save()
+                messages.success(request, "Success",extra_tags="success index")
+                return redirect(f"/details?show=true&id={diagnose.id}")
+            else:
+                diagnose.delete()
+                if os.path.exists(full_path):
+                    os.remove(full_path)
+                messages.error(request, "Invalid MRI Image",extra_tags="danger index")
+            # print(full_path)
+            
         except:
             # print("Something went wrong")
+            diagnose.delete()
+            if os.path.exists(full_path):
+                    os.remove(full_path)
             messages.error(request, "Something went wrong",extra_tags="danger index")
         # print(email,username,text,cdr,image)
 
