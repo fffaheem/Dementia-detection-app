@@ -150,7 +150,7 @@ def user(request):
     username = instance.username
     firstname = instance.first_name
     lastname = instance.last_name
-    scans = Diagnose.objects.filter(username=instance)
+    scans = Diagnose.objects.filter(username=instance).order_by('-datetime')
     context = {
         "user_active" : "active",
         "username" : username,
