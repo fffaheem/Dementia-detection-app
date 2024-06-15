@@ -31,7 +31,7 @@ def index(request):
         except:
             # print("Something went wrong")
             messages.error(request, "Something went wrong",extra_tags="danger index")
-        print(email,username,text,cdr,image)
+        # print(email,username,text,cdr,image)
 
     context = {
         "home_active" : "active"
