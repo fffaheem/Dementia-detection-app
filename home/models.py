@@ -10,6 +10,11 @@ class Contact(models.Model):
     def __str__(self):
         return str(self.id)+"_"+self.email
     
+class AI(models.Model):
+    threshold = models.FloatField()
+    def __str__(self):
+        return "threshold_"+str(self.threshold)
+    
 
 class Diagnose(models.Model):
     username = models.ForeignKey(User, on_delete=models.CASCADE)

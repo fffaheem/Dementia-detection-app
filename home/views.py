@@ -4,7 +4,7 @@ from django.contrib.auth.models import User
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from datetime import datetime
-from home.models import Contact, Diagnose
+from home.models import Contact, Diagnose, AI
 from django.utils import timezone
 from django.shortcuts import get_object_or_404
 
@@ -53,7 +53,6 @@ validator_model = load_model(BASE_DIR / "AI model/images_validator3.h5")
 
 @login_required(login_url="login")
 def index(request):
-
     instance = request.user
     if request.method == "POST":
         email = instance.email
@@ -69,7 +68,7 @@ def index(request):
 
             full_path = os.path.join(BASE_DIR,diagnose.image.url[1:])
             print(full_path)
-            is_valid = is_image_valid_mri(validator_model,full_path,0.1)
+            is_valid = is_image_valid_mri(validator_model,full_path,AI.objects.all()[0].threshold)
             if is_valid == "valid":
                 cdr = check_for_dementia(alzheimer_model,full_path)
                 print(cdr)
