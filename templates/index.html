@@ -66,14 +66,17 @@ imageInput.addEventListener("change",(e)=>{
         imagePreview.src = '../static/img_preview.jpg'; 
     }
 
-    submitBtn.insertAdjacentHTML("beforebegin","<button class='btn btn-danger my-4 mx-2'  id='cancel'>cancel</button>")
-
-    let cancelBtn = document.getElementById("cancel");
-    cancelBtn.addEventListener("click",(e)=>{
-        e.preventDefault();
-        window.location.reload();
-    })
-
+    let cancelBtnTry = document.getElementById("cancel");
+    if(!cancelBtnTry){
+        submitBtn.insertAdjacentHTML("beforebegin","<button class='btn btn-danger my-4 mx-2'  id='cancel'>cancel</button>")
+        
+        let cancelBtn = document.getElementById("cancel");
+        cancelBtn.addEventListener("click",(e)=>{
+            e.preventDefault();
+            window.location.reload();
+        })
+    }
+        
 })
 
 
