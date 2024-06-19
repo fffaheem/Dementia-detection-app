@@ -222,6 +222,9 @@ def loginUser(request):
     return render(request,"login.html",context)
 
 def signup(request):
+    if request.user.is_authenticated:
+        return redirect("/")
+    
     if request.method == "POST":
         email = request.POST.get("email")
         username = request.POST.get("username")
@@ -236,12 +239,7 @@ def signup(request):
         except:
             messages.error(request, "Username or email already exists.", extra_tags="danger signup")
 
-
-    context = {
-        "login_active" : "active"
-    }
-
-    return render(request,"signup.html",context)
+    return render(request,"signup.html")
 
 def logoutUser(request):
     
