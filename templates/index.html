@@ -3,6 +3,16 @@
 
 {% block body %}
 
+<style>
+
+    #imagePreview{
+        width: 15rem;
+        height: auto;
+    }
+   
+</style>
+
+
 {% if messages %}
     {% for message in messages %}
         {% if "index" in message.extra_tags %}
@@ -22,16 +32,52 @@
 <div class="container my-4">
     <form id="form" action="/" method="POST" enctype="multipart/form-data">
         {% csrf_token %}
+        <div class="mb-3 my-4 d-flex justify-content-center">
+            <img id="imagePreview" src="../static/img_preview.jpg" alt="Uplaoded Image">
+        </div>
         <div class="input-group mb-3 my-4">
             <label class="input-group-text" for="image">Upload</label>
             <input type="file" class="form-control" id="image" name="image" accept="image/jpeg, image/png" required>
         </div>
 
         <div class="d-flex justify-content-end">
+            
             <button type="submit" class="btn btn-primary my-4"  id="submit">submit</button>
         </div>
     </form>
 </div>
+
+
+<script>
+
+let imageInput = document.getElementById('image');
+let submitBtn = document.getElementById('submit');
+
+imageInput.addEventListener("change",(e)=>{
+    const file = event.target.files[0];
+    const imagePreview = document.getElementById('imagePreview');
+    if (file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            imagePreview.src = e.target.result;
+        }
+        reader.readAsDataURL(file);
+    } else {
+        imagePreview.src = '../static/img_preview.jpg'; 
+    }
+
+    submitBtn.insertAdjacentHTML("beforebegin","<button class='btn btn-danger my-4 mx-2'  id='cancel'>cancel</button>")
+
+    let cancelBtn = document.getElementById("cancel");
+    cancelBtn.addEventListener("click",(e)=>{
+        e.preventDefault();
+        window.location.reload();
+    })
+
+})
+
+
+</script>
 
 {% endblock body %}
 
